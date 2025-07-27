@@ -26,6 +26,22 @@ import {
   Activity,
   Search
 } from "lucide-react"
+import { getDatabase, ref, onValue } from "firebase/database";
+import { getAuth } from "firebase/auth";
+
+const db = getDatabase();
+const auth = getAuth();
+
+const userId = auth.currentUser?.uid;
+if (userId) {
+  onValue(ref(db, '/users/' + userId), (snapshot) => {
+    const username = (snapshot.val() && snapshot.val().username) || 'Anonymous';
+    return username;
+  }, {
+    onlyOnce: true
+  });
+}
+
 
 export default function HomePage() {
   return (
@@ -48,9 +64,9 @@ export default function HomePage() {
               </div>
               <div className="flex items-center space-x-3">
                 <div className="w-8 h-8 bg-blue-600 rounded flex items-center justify-center">
-                  <span className="text-white text-sm font-semibold">R</span>
+                  <span className="text-white text-sm font-semibold">Rajesh</span>
                 </div>
-                <span className="text-gray-300">Rajesh Kumar</span>
+                <span className="text-gray-300"></span>
               </div>
             </div>
           </div>

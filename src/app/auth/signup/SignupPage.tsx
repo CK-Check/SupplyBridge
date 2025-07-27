@@ -9,6 +9,12 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import { Badge } from '@/components/ui/badge'
 import { LoginPage } from '../login/LoginPage'
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import {getDatabase, ref, set} from "firebase/database";
+import app from '../../../lib/utils';
+
+const auth = getAuth();
+const database = getDatabase(app);
 
 // Signup Page Component
 export function SignupPage() {
@@ -23,7 +29,7 @@ export function SignupPage() {
       confirmPassword: '',
       accountType: 'vendor'
     })
-  
+
     const handleSubmit = (e: React.FormEvent) => {
       e.preventDefault()
       if (formData.password !== formData.confirmPassword) {
@@ -31,6 +37,24 @@ export function SignupPage() {
         return
       }
       console.log('Signup submitted:', formData)
+      createUserWithEmailAndPassword(auth, formData.email, formData.password)
+      .then((userCredential) => {
+        // Signed up 
+        const user = userCredential.user;
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+      });
+      // Write user data to database
+      set(ref(database, 'users/' + formData.email.replace('.', '_')), {
+        businessName: formData.businessName,
+        ownerName: formData.ownerName,
+        email: formData.email,
+        phone: formData.phone,
+        location: formData.location,
+        accountType: formData.accountType
+      })
       // Redirect to dashboard/home page after successful signup
       router.push('/home')
     }

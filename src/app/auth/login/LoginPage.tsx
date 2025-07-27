@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import { Badge } from '@/components/ui/badge'
+import { getAuth, validatePassword, signInWithEmailAndPassword } from "firebase/auth";
 
 // Login Page Component
 export function LoginPage() {
@@ -20,8 +21,31 @@ export function LoginPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     console.log('Login submitted:', formData)
-    // Redirect to dashboard/home page after successful login
-    router.push('/home')
+    const auth = getAuth();
+    // Validate email and password
+    if (!formData.email || !formData.password) {
+      alert('Please enter both email and password')
+      return
+    }
+    if (!validatePassword(auth, formData.password)) {
+      alert('Password must be at least 6 characters long')
+      return
+    }
+    // Sign in with Firebase
+    signInWithEmailAndPassword(auth, formData.email, formData.password)
+      .then((userCredential) => {
+        // Signed in successfully
+        const user = userCredential.user;
+        console.log('User signed in:', user)
+        // Redirect to dashboard/home page after successful login
+        router.push('/home')
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        console.error('Error signing in:', errorCode, errorMessage)
+        alert('Login failed: ' + errorMessage)
+      })
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
