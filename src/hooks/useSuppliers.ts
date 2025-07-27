@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import { collection, getDocs, query, where, orderBy } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
-import { Supplier } from '@/types/vendor';
+import { db } from '../../lib/firebase';
+// Update the import path below to the correct relative path, for example:
+import { Supplier } from '../types/vendor';
+// Or create the file if it does not exist.
 
 // Mock data for demo purposes
 const mockSuppliers: Supplier[] = [
