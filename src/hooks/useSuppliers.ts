@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { collection, getDocs, query, where, orderBy } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
+import { db } from '../../lib/firebase';
 // Update the import path below to the correct relative path, for example:
 import { Supplier } from '../types/vendor';
 // Or create the file if it does not exist.

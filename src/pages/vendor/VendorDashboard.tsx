@@ -27,7 +27,7 @@ const VendorDashboard = () => {
       // Search filter
       if (searchTerm && !supplier.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
           !supplier.location.toLowerCase().includes(searchTerm.toLowerCase()) &&
-          !supplier.specialties.some(s => s.toLowerCase().includes(searchTerm.toLowerCase()))) {
+          !supplier.specialties.some((s: string) => s.toLowerCase().includes(searchTerm.toLowerCase()))) {
         return false;
       }
 
