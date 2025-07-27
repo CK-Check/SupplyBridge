@@ -13,7 +13,7 @@ import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import {getDatabase, ref, set} from "firebase/database";
 import app from '../../../lib/utils';
 
-const auth = getAuth();
+const auth = getAuth(app);
 const database = getDatabase(app);
 
 // Signup Page Component
@@ -30,7 +30,7 @@ export function SignupPage() {
       accountType: 'vendor'
     })
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit =  function (e: React.FormEvent) {
       e.preventDefault()
       if (formData.password !== formData.confirmPassword) {
         alert('Passwords do not match')
@@ -38,23 +38,24 @@ export function SignupPage() {
       }
       console.log('Signup submitted:', formData)
       createUserWithEmailAndPassword(auth, formData.email, formData.password)
-      .then((userCredential) => {
+      .then(async (userCredential) => {
         // Signed up 
         const user = userCredential.user;
+        
+        // Write user data to database
+        await set(ref(database, 'users/' + user.uid), {
+          businessName: formData.businessName,
+          ownerName: formData.ownerName,
+          email: formData.email,
+          phone: formData.phone,
+          location: formData.location,
+          accountType: formData.accountType
+        })
       })
       .catch((error) => {
         const errorCode = error.code;
         const errorMessage = error.message;
       });
-      // Write user data to database
-      set(ref(database, 'users/' + formData.email.replace('.', '_')), {
-        businessName: formData.businessName,
-        ownerName: formData.ownerName,
-        email: formData.email,
-        phone: formData.phone,
-        location: formData.location,
-        accountType: formData.accountType
-      })
       // Redirect to dashboard/home page after successful signup
       router.push('/home')
     }

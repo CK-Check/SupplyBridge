@@ -1,3 +1,5 @@
+'use client';
+
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -38,8 +40,33 @@ import {
   Wallet,
   Building
 } from "lucide-react"
+import { getDatabase, onValue, ref } from "firebase/database";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import app from "@/lib/utils";
+import { useEffect, useState } from "react";
+
+
+const db = getDatabase(app);
+const auth = getAuth(app);
 
 export default function VendorDashboard() {
+  const [username, setUsername] = useState('Anonymous');
+    
+    useEffect(() => {
+    const unsub = onAuthStateChanged(auth, (user) => {
+      if(user){
+        const userId = user?.uid;
+        onValue(ref(db, '/users/' + userId), (snapshot) => {
+          const data = (snapshot.val());
+          setUsername(data?.ownerName || 'Anonymous');
+        });
+      }else{
+        setUsername('Anonymous');
+      }
+    });
+  
+    return () => unsub(); // Cleanup subscription on unmount
+  }, []);
   return (
     <div className="min-h-screen bg-gray-900 text-gray-100 font-mono">
       {/* Navigation */}
@@ -60,9 +87,9 @@ export default function VendorDashboard() {
               </div>
               <div className="flex items-center space-x-3">
                 <div className="w-8 h-8 bg-blue-600 rounded flex items-center justify-center">
-                  <span className="text-white text-sm font-semibold">R</span>
+                  <span className="text-white text-sm font-semibold">{username[0]}</span>
                 </div>
-                <span className="text-gray-300">Rajesh Kumar</span>
+                <span className="text-gray-300">{username}</span>
               </div>
             </div>
           </div>

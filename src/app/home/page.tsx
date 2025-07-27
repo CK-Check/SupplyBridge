@@ -1,3 +1,5 @@
+'use client';
+
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -26,24 +28,34 @@ import {
   Activity,
   Search
 } from "lucide-react"
-import { getDatabase, ref, onValue } from "firebase/database";
-import { getAuth } from "firebase/auth";
+import { getDatabase, ref, onValue, connectDatabaseEmulator } from "firebase/database";
+import { getAuth, onAuthStateChanged, connectAuthEmulator } from "firebase/auth";
+import { useEffect, useState } from "react";
+import { on } from "events";
+import app from "@/lib/utils";
 
-const db = getDatabase();
-const auth = getAuth();
-
-const userId = auth.currentUser?.uid;
-if (userId) {
-  onValue(ref(db, '/users/' + userId), (snapshot) => {
-    const username = (snapshot.val() && snapshot.val().username) || 'Anonymous';
-    return username;
-  }, {
-    onlyOnce: true
-  });
-}
+const db = getDatabase(app);
+const auth = getAuth(app);
 
 
 export default function HomePage() {
+  const [username, setUsername] = useState('Anonymous');
+  
+  useEffect(() => {
+  const unsub = onAuthStateChanged(auth, (user) => {
+    if(user){
+      const userId = user?.uid;
+      onValue(ref(db, '/users/' + userId), (snapshot) => {
+        const data = (snapshot.val());
+        setUsername(data?.ownerName || 'Anonymous');
+      });
+    }else{
+      setUsername('Anonymous');
+    }
+  });
+
+  return () => unsub(); // Cleanup subscription on unmount
+}, []);
   return (
     <div className="min-h-screen bg-gray-900 text-gray-100 font-mono">
       {/* Navigation */}
@@ -64,9 +76,9 @@ export default function HomePage() {
               </div>
               <div className="flex items-center space-x-3">
                 <div className="w-8 h-8 bg-blue-600 rounded flex items-center justify-center">
-                  <span className="text-white text-sm font-semibold">Rajesh</span>
+                  <span className="text-white text-sm font-semibold">{username[0]}</span>
                 </div>
-                <span className="text-gray-300"></span>
+                <span className="text-gray-300">{username}</span>
               </div>
             </div>
           </div>
@@ -77,7 +89,7 @@ export default function HomePage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-white mb-2">Good morning, Rajesh</h1>
+          <h1 className="text-3xl font-bold text-white mb-2">Good morning, {username}</h1>
           <p className="text-gray-400">Here's what's happening with your business today</p>
         </div>
 

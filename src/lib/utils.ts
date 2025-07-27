@@ -1,7 +1,8 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 import { initializeApp } from 'firebase/app';
-
+import { getDatabase, connectDatabaseEmulator } from "firebase/database";
+import { getAuth, connectAuthEmulator } from "firebase/auth";
 const firebaseConfig = {
   apiKey: "AIzaSyA3TKNgfjRjTT6qS8uEP7cNPph3ospXh38",
   authDomain: "supplybridge-1fb66.firebaseapp.com",
@@ -13,6 +14,11 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
+
+
+connectAuthEmulator(getAuth(app), "http://127.0.0.1:9099");
+connectDatabaseEmulator(getDatabase(app), 'localhost', 9000);
+
 
 export default app;
 
