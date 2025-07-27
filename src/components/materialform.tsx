@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Plus, X, Package } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "src/hooks/use-toast";
 
 interface Material {
   name: string;
@@ -142,7 +142,7 @@ export function MaterialForm() {
               <Label htmlFor="category" className="text-sm font-medium">
                 Category *
               </Label>
-              <Select value={material.category} onValueChange={(value) => handleInputChange("category", value)}>
+              <Select value={material.category} onValueChange={(value: string) => handleInputChange("category", value)}>
                 <SelectTrigger className="hover-glow focus:shadow-glow transition-all duration-300">
                   <SelectValue placeholder="Select category" />
                 </SelectTrigger>
@@ -161,7 +161,7 @@ export function MaterialForm() {
               <Label htmlFor="unit" className="text-sm font-medium">
                 Unit *
               </Label>
-              <Select value={material.unit} onValueChange={(value) => handleInputChange("unit", value)}>
+              <Select value={material.unit} onValueChange={(value: string) => handleInputChange("unit", value)}>
                 <SelectTrigger className="hover-glow focus:shadow-glow transition-all duration-300">
                   <SelectValue placeholder="Select unit" />
                 </SelectTrigger>
